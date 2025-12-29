@@ -1,39 +1,34 @@
-const dog = document.getElementById("dog");
-const obstacle = document.getElementById("obstacle");
-const scoreText = document.getElementById("score");
-
-let score = 0;
-let jumping = false;
-
-function jump() {
-  if (jumping) return;
-  jumping = true;
-  dog.classList.add("jump");
-
-  setTimeout(() => {
-    dog.classList.remove("jump");
-    jumping = false;
-  }, 600);
+body {
+  margin: 0;
+  overflow: hidden;
+  background: black;
+  font-family: Arial, sans-serif;
 }
 
-document.addEventListener("keydown", e => {
-  if (e.code === "Space") jump();
-});
+#hud {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  color: white;
+  font-size: 16px;
+  background: rgba(0,0,0,0.5);
+  padding: 10px;
+  border-radius: 8px;
+}
 
-document.addEventListener("touchstart", jump);
+#ui {
+  position: fixed;
+  bottom: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
 
-setInterval(() => {
-  const dogBottom = parseInt(window.getComputedStyle(dog).getPropertyValue("bottom"));
-  const obstacleLeft = obstacle.getBoundingClientRect().left;
-  const dogRight = dog.getBoundingClientRect().right;
-
-  if (obstacleLeft < dogRight && obstacleLeft > dogRight - 20 && dogBottom < 40) {
-    alert("Game Over!\nScore: " + score);
-    location.reload();
-  }
-}, 10);
-
-setInterval(() => {
-  score++;
-  scoreText.innerText = "Score: " + score;
-}, 500);
+button {
+  padding: 15px 35px;
+  font-size: 18px;
+  border-radius: 12px;
+  border: none;
+  font-weight: bold;
+  background: #ffcc00;
+}
