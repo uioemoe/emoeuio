@@ -2,24 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hill Climb 3D Pro (Fictional)</title>
+  <title>Fake PUBG Simulator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="hud">
-  <div>Fuel: <span id="fuel">100</span>%</div>
-  <div>Coins: <span id="coins">0</span></div>
-  <div>Distance: <span id="dist">0</span> m</div>
+<h2 class="title">PUBG Simulator (Fake)</h2>
+
+<div id="gameArea">
+  <div id="player"></div>
 </div>
 
-<div id="ui">
-  <button id="brake">BRAKE</button>
-  <button id="gas">GAS</button>
+<div class="controls">
+  <button onclick="move('up')">⬆</button><br>
+  <button onclick="move('left')">⬅</button>
+  <button onclick="shoot()">🔫</button>
+  <button onclick="move('right')">➡</button><br>
+  <button onclick="move('down')">⬇</button>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+<p id="health">Health: 100</p>
+
 <script src="game.js"></script>
 </body>
 </html>
