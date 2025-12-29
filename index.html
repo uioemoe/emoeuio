@@ -1,20 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Dog Runner Game</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dog Run Game</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #f7f7f7;
+    font-family: Arial;
+  }
+  canvas {
+    display: block;
+    background: #ffffff;
+  }
+</style>
 </head>
 <body>
 
-<div class="game">
-  <div id="dog"></div>
-  <div id="obstacle"></div>
-</div>
+<canvas id="game"></canvas>
 
-<h3 id="score">Score: 0</h3>
-<p>Tap screen or press SPACE to jump</p>
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-<script src="game.js"></script>
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = 200;
+}
+resize();
+window.addEventListener("resize", resize);
+
+// Dog
+let dog = { x: 50, y: 150, w: 40, h: 40, vy: 0, jump: false };
+
+// Obstacle
+let obs = { x: canvas.width, y: 160, w: 20, h: 30 };
+
+// Game
+let gravity = 0.8;
+let score = 0;
+
+function drawDog() {
+  ctx.fillStyle = "brown";
+  ctx.fillRect(dog.x, dog.y, dog.w, dog.h);
+}
+
+function drawObs() {
+  ctx.fillStyle = "black";
+  ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+}
+
+function update() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Ground
+  ctx.fillStyle = "#888";
+  ctx.fillRect(0, 190, canvas.width, 10);
+
+  // Dog physics
+  dog.vy += gravity;
+  dog.y += dog.vy;
+  if (dog.y > 150) {
+    dog.y = 150;
+    dog.jump = false;
+  }
+
+  // Obstacle move
+  obs.x -= 6;
+  if (obs.x < -20) {
+    obs.x = canvas.width;
+    score++;
+  }
+
+  drawDog();
+  drawObs();
+
+  // Score
+  ctx.fillStyle = "black";
+  ctx.fillText("Score: " + score, 10, 20);
+
+  requestAnimationFrame(update);
+}
+
+// Jump
+document.addEventListener("keydown", e => {
+  if (e.code === "Space" && !dog.jump) {
+    dog.vy = -12;
+    dog.jump = true;
+  }
+});
+document.addEventListener("touchstart", () => {
+  if (!dog.jump) {
+    dog.vy = -12;
+    dog.jump = true;
+  }
+});
+
+update();
+</script>
+
 </body>
 </html>
