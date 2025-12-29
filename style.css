@@ -1,34 +1,52 @@
+
 body {
   margin: 0;
-  overflow: hidden;
-  background: black;
-  font-family: Arial, sans-serif;
-}
-
-#hud {
-  position: fixed;
-  top: 10px;
-  left: 10px;
+  font-family: Arial;
+  background: #1b1b1b;
   color: white;
-  font-size: 16px;
-  background: rgba(0,0,0,0.5);
-  padding: 10px;
-  border-radius: 8px;
+  text-align: center;
 }
 
-#ui {
-  position: fixed;
-  bottom: 20px;
+.title {
+  margin: 10px;
+}
+
+#gameArea {
   width: 100%;
-  display: flex;
-  justify-content: space-around;
+  max-width: 400px;
+  height: 400px;
+  background: #2e7d32;
+  margin: auto;
+  position: relative;
+  overflow: hidden;
+  border: 3px solid #000;
 }
 
-button {
-  padding: 15px 35px;
-  font-size: 18px;
-  border-radius: 12px;
-  border: none;
-  font-weight: bold;
-  background: #ffcc00;
+#player {
+  width: 30px;
+  height: 30px;
+  background: blue;
+  position: absolute;
+  left: 185px;
+  top: 185px;
+}
+
+.enemy {
+  width: 30px;
+  height: 30px;
+  background: red;
+  position: absolute;
+}
+
+.bullet {
+  width: 6px;
+  height: 6px;
+  background: yellow;
+  position: absolute;
+}
+
+.controls button {
+  font-size: 22px;
+  padding: 10px;
+  margin: 3px;
 }
