@@ -1,51 +1,39 @@
-body {
-  background: #1c1c1c;
-  text-align: center;
-  font-family: monospace;
-  color: #fff;
+const dog = document.getElementById("dog");
+const obstacle = document.getElementById("obstacle");
+const scoreText = document.getElementById("score");
+
+let score = 0;
+let jumping = false;
+
+function jump() {
+  if (jumping) return;
+  jumping = true;
+  dog.classList.add("jump");
+
+  setTimeout(() => {
+    dog.classList.remove("jump");
+    jumping = false;
+  }, 600);
 }
 
-.game {
-  width: 90%;
-  max-width: 600px;
-  height: 200px;
-  border-bottom: 2px solid #fff;
-  margin: 40px auto;
-  position: relative;
-  overflow: hidden;
-}
+document.addEventListener("keydown", e => {
+  if (e.code === "Space") jump();
+});
 
-#dog {
-  width: 40px;
-  height: 40px;
-  background: #fff;
-  position: absolute;
-  bottom: 0;
-  left: 40px;
-  border-radius: 10px;
-}
+document.addEventListener("touchstart", jump);
 
-#obstacle {
-  width: 20px;
-  height: 40px;
-  background: #fff;
-  position: absolute;
-  bottom: 0;
-  right: -20px;
-  animation: move 2s linear infinite;
-}
+setInterval(() => {
+  const dogBottom = parseInt(window.getComputedStyle(dog).getPropertyValue("bottom"));
+  const obstacleLeft = obstacle.getBoundingClientRect().left;
+  const dogRight = dog.getBoundingClientRect().right;
 
-@keyframes move {
-  0% { right: -20px; }
-  100% { right: 100%; }
-}
+  if (obstacleLeft < dogRight && obstacleLeft > dogRight - 20 && dogBottom < 40) {
+    alert("Game Over!\nScore: " + score);
+    location.reload();
+  }
+}, 10);
 
-.jump {
-  animation: jump 0.6s linear;
-}
-
-@keyframes jump {
-  0% { bottom: 0; }
-  50% { bottom: 90px; }
-  100% { bottom: 0; }
-}
+setInterval(() => {
+  score++;
+  scoreText.innerText = "Score: " + score;
+}, 500);
