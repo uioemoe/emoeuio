@@ -1,0 +1,39 @@
+.header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: black;
+    padding: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* RED LOGO BOX */
+.logo-box {
+    width: 60px;
+    height: 42px;
+    background: #ff0000;
+    border-radius: 12px;
+    position: relative;
+}
+
+/* PLAY ICON */
+.play-triangle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-40%, -50%);
+    width: 0;
+    height: 0;
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-left: 14px solid white;
+}
+
+.brand-name {
+    color: white;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
