@@ -1,13 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mongue Video</title>
+
+<style>
+body {
+  margin: 0;
+  background: #f2f2f2;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  background: black;
+  padding: 10px;
+  text-align: center;
+}
+.header a {
+  color: white;
+  text-decoration: none;
+}
+
+/* LOGIN */
+.login-box {
+  text-align: center;
+  margin: 10px;
+}
+.login-box button {
+  padding: 8px 14px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+/* VIDEO CARD */
+.card {
+  max-width: 480px;
+  margin: 12px auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+video {
+  width: 100%;
+  border-radius: 10px;
+}
+
+/* ACTIONS */
+.yt-actions {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+  font-size: 16px;
+}
+.yt-btn {
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <a href="https://uioemoe.github.io/emoeuio/">
+    <h2>Mongue Video</h2>
+  </a>
+</div>
+
+<!-- 🔥 LOGIN BUTTONS (ADDED CORRECTLY) -->
+<div class="login-box">
+  <button id="loginBtn">Sign in with Google</button>
+  <button id="logoutBtn" style="display:none;">Logout</button>
+</div>
+
+<!-- VIDEO 1 -->
+<div class="card">
+  <video controls playsinline>
+    <source src="https://www.w3schools.com/html/mov_bbb.mp4" />
+  </video>
+
+  <div class="yt-actions">
+    <span class="yt-btn" id="like-video1">👍 <span id="likeCount-video1">0</span></span>
+    <span class="yt-btn" id="dislike-video1">👎 <span id="dislikeCount-video1">0</span></span>
+  </div>
+</div>
+
+<!-- VIDEO 2 -->
+<div class="card">
+  <video controls playsinline>
+    <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" />
+  </video>
+
+  <div class="yt-actions">
+    <span class="yt-btn" id="like-video2">👍 <span id="likeCount-video2">0</span></span>
+    <span class="yt-btn" id="dislike-video2">👎 <span id="dislikeCount-video2">0</span></span>
+  </div>
+</div>
+
 <!-- 🔥 FIREBASE SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
-/* 🔥 WAIT FOR PAGE TO LOAD */
 window.addEventListener("DOMContentLoaded", () => {
 
-  /* 🔥 FIREBASE CONFIG */
   const firebaseConfig = {
     apiKey: "AIzaSyDrnHPI4X4w0tpAKhjpoDMKD6M0P1JfVc8",
     authDomain: "emoeuio.firebaseapp.com",
@@ -17,20 +117,16 @@ window.addEventListener("DOMContentLoaded", () => {
     appId: "1:825724870390:web:efc037f9b81bb825c196d7"
   };
 
-  /* 🔥 INIT FIREBASE */
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  /* ELEMENTS */
   const loginBtn = document.getElementById("loginBtn");
   const logoutBtn = document.getElementById("logoutBtn");
 
-  /* LOGIN */
-  loginBtn.onclick = () => {
+  loginBtn.onclick = () =>
     auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
       .catch(err => alert(err.message));
-  };
 
   logoutBtn.onclick = () => auth.signOut();
 
@@ -39,68 +135,58 @@ window.addEventListener("DOMContentLoaded", () => {
     logoutBtn.style.display = user ? "inline" : "none";
   });
 
-  /* DESCRIPTION TOGGLE */
-  window.toggleDesc = function(id, btn){
-    const el = document.getElementById(id);
-    el.classList.toggle("open");
-    btn.innerText = el.classList.contains("open")
-      ? "SHOW LESS"
-      : "SHOW MORE";
-  };
-
-  /* 🔥 LIKE / DISLIKE SYSTEM */
-  function setupVideo(videoId){
-    const likeBtn = document.getElementById("like-"+videoId);
-    const dislikeBtn = document.getElementById("dislike-"+videoId);
-    const likeCount = document.getElementById("likeCount-"+videoId);
-    const dislikeCount = document.getElementById("dislikeCount-"+videoId);
+  function setupVideo(videoId) {
+    const likeBtn = document.getElementById("like-" + videoId);
+    const dislikeBtn = document.getElementById("dislike-" + videoId);
+    const likeCount = document.getElementById("likeCount-" + videoId);
+    const dislikeCount = document.getElementById("dislikeCount-" + videoId);
 
     const videoRef = db.collection("videos").doc(videoId);
 
-    // LIVE COUNTS
-    videoRef.onSnapshot(doc=>{
-      const d = doc.data() || {likes:0, dislikes:0};
-      likeCount.innerText = d.likes || 0;
-      dislikeCount.innerText = d.dislikes || 0;
+    videoRef.onSnapshot(doc => {
+      const d = doc.data() || { likes: 0, dislikes: 0 };
+      likeCount.innerText = d.likes;
+      dislikeCount.innerText = d.dislikes;
     });
 
-    likeBtn.onclick = () => vote(videoId,"like");
-    dislikeBtn.onclick = () => vote(videoId,"dislike");
+    likeBtn.onclick = () => vote(videoId, "like");
+    dislikeBtn.onclick = () => vote(videoId, "dislike");
   }
 
-  async function vote(videoId, type){
+  async function vote(videoId, type) {
     const user = auth.currentUser;
-    if(!user) return alert("Please login to vote");
+    if (!user) return alert("Please login to vote");
 
-    const voteRef = db.collection("votes").doc(user.uid+"_"+videoId);
+    const voteRef = db.collection("votes").doc(user.uid + "_" + videoId);
     const videoRef = db.collection("videos").doc(videoId);
 
-    await db.runTransaction(async t=>{
+    await db.runTransaction(async t => {
       const v = await t.get(voteRef);
-      let update = {likes:0, dislikes:0};
+      let update = { likes: 0, dislikes: 0 };
 
-      if(v.exists){
+      if (v.exists) {
         const old = v.data().type;
-        if(old === type){
-          update[type+"s"] = -1; // UNDO
+        if (old === type) {
+          update[type + "s"] = -1;
           t.delete(voteRef);
         } else {
-          update[old+"s"] = -1;
-          update[type+"s"] = 1;
-          t.set(voteRef,{type});
+          update[old + "s"] = -1;
+          update[type + "s"] = 1;
+          t.set(voteRef, { type });
         }
       } else {
-        update[type+"s"] = 1;
-        t.set(voteRef,{type});
+        update[type + "s"] = 1;
+        t.set(voteRef, { type });
       }
 
-      t.set(videoRef, update, {merge:true});
+      t.set(videoRef, update, { merge: true });
     });
   }
 
-  /* ACTIVATE VIDEOS */
   setupVideo("video1");
   setupVideo("video2");
-
 });
 </script>
+
+</body>
+</html>
