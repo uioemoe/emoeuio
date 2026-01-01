@@ -4,14 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Mongue Video</title>
-
 <style>
 body {
   margin: 0;
   background: #f2f2f2;
   font-family: Arial, sans-serif;
 }
-
 .header {
   background: black;
   padding: 10px;
@@ -21,7 +19,6 @@ body {
   color: white;
   text-decoration: none;
 }
-
 /* LOGIN */
 .login-box {
   text-align: center;
@@ -32,7 +29,6 @@ body {
   margin: 5px;
   cursor: pointer;
 }
-
 /* VIDEO CARD */
 .card {
   max-width: 480px;
@@ -42,12 +38,10 @@ body {
   padding: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
-
 video {
   width: 100%;
   border-radius: 10px;
 }
-
 /* ACTIONS */
 .yt-actions {
   display: flex;
@@ -60,7 +54,6 @@ video {
 }
 </style>
 </head>
-
 <body>
 <!-- USER INFO -->
 <div id="userBox" style="display:none; text-align:center; margin:10px;">
@@ -71,71 +64,86 @@ video {
   <div id="userName" style="font-weight:600;"></div>
   <div id="userEmail" style="font-size:12px;color:#555;"></div>
 </div>
-
 <!-- HEADER -->
 <div class="header">
   <a href="https://uioemoe.github.io/emoeuio/">
     <h2>Mongue Video</h2>
   </a>
 </div>
-
 <!-- 🔥 LOGIN BUTTONS (ADDED CORRECTLY) -->
 <div class="login-box">
   <button id="loginBtn">Sign in with Google</button>
   <button id="logoutBtn" style="display:none;">Logout</button>
 </div>
-
 <!-- VIDEO 1 -->
 <div class="card">
   <video controls playsinline>
     <source src="https://www.w3schools.com/html/mov_bbb.mp4" />
   </video>
-
   <div class="yt-actions">
     <span class="yt-btn" id="like-video1">👍 <span id="likeCount-video1">0</span></span>
     <span class="yt-btn" id="dislike-video1">👎 <span id="dislikeCount-video1">0</span></span>
   </div>
 </div>
-
 <!-- VIDEO 2 -->
 <div class="card">
   <video controls playsinline>
     <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" />
   </video>
-
   <div class="yt-actions">
     <span class="yt-btn" id="like-video2">👍 <span id="likeCount-video2">0</span></span>
     <span class="yt-btn" id="dislike-video2">👎 <span id="dislikeCount-video2">0</span></span>
   </div>
 </div>
-
 <!-- 🔥 FIREBASE SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
 <script>
-const userBox = document.getElementById("userBox");
-const userPhoto = document.getElementById("userPhoto");
-const userName = document.getElementById("userName");
-const userEmail = document.getElementById("userEmail");
-
-auth.onAuthStateChanged(user => {
-  if (user) {
-    loginBtn.style.display = "none";
-    logoutBtn.style.display = "inline";
-
-    userBox.style.display = "block";
-    userPhoto.src = user.photoURL || "";
-    userName.textContent = user.displayName || "User";
-    userEmail.textContent = user.email || "";
-  } else {
-    loginBtn.style.display = "inline";
-    logoutBtn.style.display = "none";
-    userBox.style.display = "none";
-  }
+window.addEventListener("DOMContentLoaded", () => {
+  /* 🔥 FIREBASE CONFIG */
+  const firebaseConfig = {
+    apiKey: "AIzaSyDrnHPI4X4w0tpAKhjpoDMKD6M0P1JfVc8",
+    authDomain: "emoeuio.firebaseapp.com",
+    projectId: "emoeuio",
+    storageBucket: "emoeuio.firebasestorage.app",
+    messagingSenderId: "825724870390",
+    appId: "1:825724870390:web:efc037f9b81bb825c196d7"
+  };
+  /* 🔥 INIT FIREBASE */
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  /* ELEMENTS */
+  const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const userBox = document.getElementById("userBox");
+  const userPhoto = document.getElementById("userPhoto");
+  const userName = document.getElementById("userName");
+  const userEmail = document.getElementById("userEmail");
+  /* LOGIN / LOGOUT */
+  loginBtn.onclick = () => {
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .catch(err => alert(err.message));
+  };
+  logoutBtn.onclick = () => auth.signOut();
+  /* USER INFO */
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      loginBtn.style.display = "none";
+      logoutBtn.style.display = "inline";
+      userBox.style.display = "block";
+      userPhoto.src = user.photoURL || "";
+      userName.textContent = user.displayName || "User";
+      userEmail.textContent = user.email || "";
+    } else {
+      loginBtn.style.display = "inline";
+      logoutBtn.style.display = "none";
+      userBox.style.display = "none";
+    }
+  });
 });
 </script>
-
+});
+</script>
 </body>
-</html>
