@@ -3,21 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Temple Run Simulator</title>
-<link rel="stylesheet" href="style.css">
+<title>Demo Video Feed</title>
+
+<style>
+body {
+    margin: 0;
+    background: #f2f2f2;
+    font-family: Arial, sans-serif;
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: black;
+    padding: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* LOGO IMAGE */
+.logo-img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+/* BRAND NAME */
+.brand-name {
+    color: white;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+/* VIDEO CARD */
+.card {
+    max-width: 480px;
+    margin: 12px auto;
+    background: #fff;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+video {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.actions {
+    display: flex;
+    margin-top: 8px;
+    gap: 10px;
+}
+
+button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    color: white;
+}
+
+.like { background: #4caf50; }
+.dislike { background: #f44336; }
+
+.count {
+    display: block;
+    font-size: 13px;
+}
+</style>
 </head>
+
 <body>
 
-<div id="game">
-  <div id="player"></div>
-  <div id="ground"></div>
-  <div id="score">Score: 0</div>
-  <div id="gameOver">
-    Game Over<br>
-    <button onclick="restart()">Restart</button>
-  </div>
+<!-- HEADER -->
+<div class="header">
+    <img src="YOUR_DIRECT_IMAGE_URL_HERE" class="logo-img" alt="logo">
+    <div class="brand-name">neom</div>
 </div>
 
-<script src="game.js"></script>
+<!-- VIDEO 1 -->
+<div class="card">
+    <video controls playsinline>
+        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+    </video>
+
+    <div class="actions">
+        <button class="like" onclick="like(1)">
+            👍 Like <span id="l1" class="count">0</span>
+        </button>
+        <button class="dislike" onclick="dislike(1)">
+            👎 Dislike <span id="d1" class="count">0</span>
+        </button>
+    </div>
+</div>
+
+<!-- VIDEO 2 -->
+<div class="card">
+    <video controls playsinline>
+        <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4">
+    </video>
+
+    <div class="actions">
+        <button class="like" onclick="like(2)">
+            👍 Like <span id="l2" class="count">0</span>
+        </button>
+        <button class="dislike" onclick="dislike(2)">
+            👎 Dislike <span id="d2" class="count">0</span>
+        </button>
+    </div>
+</div>
+
+<script>
+let likes = [0,0,0];
+let dislikes = [0,0,0];
+
+function like(id) {
+    likes[id]++;
+    document.getElementById("l"+id).innerText = likes[id];
+}
+
+function dislike(id) {
+    dislikes[id]++;
+    document.getElementById("d"+id).innerText = dislikes[id];
+}
+</script>
+
 </body>
 </html>
