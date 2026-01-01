@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -95,6 +96,33 @@ video {
     <span class="yt-btn" id="dislike-video2">👎 <span id="dislikeCount-video2">0</span></span>
   </div>
 </div>
+
+<!-- VIDEO 3 -->
+<div class="card">
+
+  <!-- Streamable video -->
+  <div style="position:relative;width:100%;padding-bottom:56.25%;">
+    <iframe
+      src="https://streamable.com/e/pwcgb3"
+      frameborder="0"
+      allowfullscreen
+      style="position:absolute;top:0;left:0;width:100%;height:100%;">
+    </iframe>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="yt-actions">
+    <span class="yt-btn" id="like-video3">
+      👍 <span id="likeCount-video3">0</span>
+    </span>
+
+    <span class="yt-btn" id="dislike-video3">
+      👎 <span id="dislikeCount-video3">0</span>
+    </span>
+  </div>
+
+</div>
+
 <!-- 🔥 FIREBASE SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -195,18 +223,15 @@ window.addEventListener("DOMContentLoaded", () => {
       }
 
       t.set(videoRef, update, { merge: true });
-    });
-  }
+   
 
   /* ACTIVATE VIDEOS */
   setupVideo("video1");
   setupVideo("video2");
+  setupVideo("video3");
+  
 
 });
 </script>
 
-});
-</script>
-});
-</script>
 </body>
