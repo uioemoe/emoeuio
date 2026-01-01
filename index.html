@@ -62,6 +62,15 @@ video {
 </head>
 
 <body>
+<!-- USER INFO -->
+<div id="userBox" style="display:none; text-align:center; margin:10px;">
+  <img id="userPhoto"
+       src=""
+       alt="Profile"
+       style="width:48px;height:48px;border-radius:50%;display:block;margin:0 auto 6px;">
+  <div id="userName" style="font-weight:600;"></div>
+  <div id="userEmail" style="font-size:12px;color:#555;"></div>
+</div>
 
 <!-- HEADER -->
 <div class="header">
@@ -106,85 +115,25 @@ video {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
-window.addEventListener("DOMContentLoaded", () => {
+const userBox = document.getElementById("userBox");
+const userPhoto = document.getElementById("userPhoto");
+const userName = document.getElementById("userName");
+const userEmail = document.getElementById("userEmail");
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDrnHPI4X4w0tpAKhjpoDMKD6M0P1JfVc8",
-    authDomain: "emoeuio.firebaseapp.com",
-    projectId: "emoeuio",
-    storageBucket: "emoeuio.firebasestorage.app",
-    messagingSenderId: "825724870390",
-    appId: "1:825724870390:web:efc037f9b81bb825c196d7"
-  };
+auth.onAuthStateChanged(user => {
+  if (user) {
+    loginBtn.style.display = "none";
+    logoutBtn.style.display = "inline";
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-
-  const loginBtn = document.getElementById("loginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-
-  loginBtn.onclick = () =>
-    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-      .catch(err => alert(err.message));
-
-  logoutBtn.onclick = () => auth.signOut();
-
-  auth.onAuthStateChanged(user => {
-    loginBtn.style.display = user ? "none" : "inline";
-    logoutBtn.style.display = user ? "inline" : "none";
-  });
-
-  function setupVideo(videoId) {
-    const likeBtn = document.getElementById("like-" + videoId);
-    const dislikeBtn = document.getElementById("dislike-" + videoId);
-    const likeCount = document.getElementById("likeCount-" + videoId);
-    const dislikeCount = document.getElementById("dislikeCount-" + videoId);
-
-    const videoRef = db.collection("videos").doc(videoId);
-
-    videoRef.onSnapshot(doc => {
-      const d = doc.data() || { likes: 0, dislikes: 0 };
-      likeCount.innerText = d.likes;
-      dislikeCount.innerText = d.dislikes;
-    });
-
-    likeBtn.onclick = () => vote(videoId, "like");
-    dislikeBtn.onclick = () => vote(videoId, "dislike");
+    userBox.style.display = "block";
+    userPhoto.src = user.photoURL || "";
+    userName.textContent = user.displayName || "User";
+    userEmail.textContent = user.email || "";
+  } else {
+    loginBtn.style.display = "inline";
+    logoutBtn.style.display = "none";
+    userBox.style.display = "none";
   }
-
-  async function vote(videoId, type) {
-    const user = auth.currentUser;
-    if (!user) return alert("Please login to vote");
-
-    const voteRef = db.collection("votes").doc(user.uid + "_" + videoId);
-    const videoRef = db.collection("videos").doc(videoId);
-
-    await db.runTransaction(async t => {
-      const v = await t.get(voteRef);
-      let update = { likes: 0, dislikes: 0 };
-
-      if (v.exists) {
-        const old = v.data().type;
-        if (old === type) {
-          update[type + "s"] = -1;
-          t.delete(voteRef);
-        } else {
-          update[old + "s"] = -1;
-          update[type + "s"] = 1;
-          t.set(voteRef, { type });
-        }
-      } else {
-        update[type + "s"] = 1;
-        t.set(voteRef, { type });
-      }
-
-      t.set(videoRef, update, { merge: true });
-    });
-  }
-
-  setupVideo("video1");
-  setupVideo("video2");
 });
 </script>
 
