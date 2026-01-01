@@ -4,90 +4,103 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
-/* 🔥 FIREBASE CONFIG */
-const firebaseConfig = {
-  apiKey: "AIzaSyDrnHPI4X4w0tpAKhjpoDMKD6M0P1JfVc8",
-  authDomain: "emoeuio.firebaseapp.com",
-  projectId: "emoeuio",
-  storageBucket: "emoeuio.firebasestorage.app",
-  messagingSenderId: "825724870390",
-  appId: "1:825724870390:web:efc037f9b81bb825c196d7"
-};
+/* 🔥 WAIT FOR PAGE TO LOAD */
+window.addEventListener("DOMContentLoaded", () => {
 
-/* 🔥 INIT FIREBASE */
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+  /* 🔥 FIREBASE CONFIG */
+  const firebaseConfig = {
+    apiKey: "AIzaSyDrnHPI4X4w0tpAKhjpoDMKD6M0P1JfVc8",
+    authDomain: "emoeuio.firebaseapp.com",
+    projectId: "emoeuio",
+    storageBucket: "emoeuio.firebasestorage.app",
+    messagingSenderId: "825724870390",
+    appId: "1:825724870390:web:efc037f9b81bb825c196d7"
+  };
 
-/* DESCRIPTION TOGGLE */
-function toggleDesc(id, btn){
-  const el = document.getElementById(id);
-  el.classList.toggle("open");
-  btn.innerText = el.classList.contains("open") ? "SHOW LESS" : "SHOW MORE";
-}
+  /* 🔥 INIT FIREBASE */
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-/* LOGIN */
-loginBtn.onclick = () =>
-  auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+  /* ELEMENTS */
+  const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
 
-logoutBtn.onclick = () => auth.signOut();
+  /* LOGIN */
+  loginBtn.onclick = () => {
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .catch(err => alert(err.message));
+  };
 
-auth.onAuthStateChanged(user=>{
-  loginBtn.style.display = user ? "none":"inline";
-  logoutBtn.style.display = user ? "inline":"none";
-});
+  logoutBtn.onclick = () => auth.signOut();
 
-/* 🔥 REAL LIKE ↔ UNDO ↔ DISLIKE */
-function setupVideo(videoId){
-  const likeBtn = document.getElementById("like-"+videoId);
-  const dislikeBtn = document.getElementById("dislike-"+videoId);
-  const likeCount = document.getElementById("likeCount-"+videoId);
-  const dislikeCount = document.getElementById("dislikeCount-"+videoId);
-
-  const videoRef = db.collection("videos").doc(videoId);
-
-  // LIVE COUNTS
-  videoRef.onSnapshot(doc=>{
-    const d = doc.data() || {likes:0, dislikes:0};
-    likeCount.innerText = d.likes || 0;
-    dislikeCount.innerText = d.dislikes || 0;
+  auth.onAuthStateChanged(user => {
+    loginBtn.style.display = user ? "none" : "inline";
+    logoutBtn.style.display = user ? "inline" : "none";
   });
 
-  likeBtn.onclick = ()=> vote(videoId,"like");
-  dislikeBtn.onclick = ()=> vote(videoId,"dislike");
-}
+  /* DESCRIPTION TOGGLE */
+  window.toggleDesc = function(id, btn){
+    const el = document.getElementById(id);
+    el.classList.toggle("open");
+    btn.innerText = el.classList.contains("open")
+      ? "SHOW LESS"
+      : "SHOW MORE";
+  };
 
-async function vote(videoId, type){
-  const user = auth.currentUser;
-  if(!user) return alert("Please login to vote");
+  /* 🔥 LIKE / DISLIKE SYSTEM */
+  function setupVideo(videoId){
+    const likeBtn = document.getElementById("like-"+videoId);
+    const dislikeBtn = document.getElementById("dislike-"+videoId);
+    const likeCount = document.getElementById("likeCount-"+videoId);
+    const dislikeCount = document.getElementById("dislikeCount-"+videoId);
 
-  const voteRef = db.collection("votes").doc(user.uid+"_"+videoId);
-  const videoRef = db.collection("videos").doc(videoId);
+    const videoRef = db.collection("videos").doc(videoId);
 
-  await db.runTransaction(async t=>{
-    const v = await t.get(voteRef);
-    let update = {likes:0, dislikes:0};
+    // LIVE COUNTS
+    videoRef.onSnapshot(doc=>{
+      const d = doc.data() || {likes:0, dislikes:0};
+      likeCount.innerText = d.likes || 0;
+      dislikeCount.innerText = d.dislikes || 0;
+    });
 
-    if(v.exists){
-      const old = v.data().type;
-      if(old === type){
-        update[type+"s"] = -1;     // UNDO
-        t.delete(voteRef);
+    likeBtn.onclick = () => vote(videoId,"like");
+    dislikeBtn.onclick = () => vote(videoId,"dislike");
+  }
+
+  async function vote(videoId, type){
+    const user = auth.currentUser;
+    if(!user) return alert("Please login to vote");
+
+    const voteRef = db.collection("votes").doc(user.uid+"_"+videoId);
+    const videoRef = db.collection("videos").doc(videoId);
+
+    await db.runTransaction(async t=>{
+      const v = await t.get(voteRef);
+      let update = {likes:0, dislikes:0};
+
+      if(v.exists){
+        const old = v.data().type;
+        if(old === type){
+          update[type+"s"] = -1; // UNDO
+          t.delete(voteRef);
+        } else {
+          update[old+"s"] = -1;
+          update[type+"s"] = 1;
+          t.set(voteRef,{type});
+        }
       } else {
-        update[old+"s"] = -1;
         update[type+"s"] = 1;
         t.set(voteRef,{type});
       }
-    } else {
-      update[type+"s"] = 1;
-      t.set(voteRef,{type});
-    }
 
-    t.set(videoRef, update, {merge:true});
-  });
-}
+      t.set(videoRef, update, {merge:true});
+    });
+  }
 
-/* ACTIVATE */
-setupVideo("video1");
-setupVideo("video2");
+  /* ACTIVATE VIDEOS */
+  setupVideo("video1");
+  setupVideo("video2");
+
+});
 </script>
