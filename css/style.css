@@ -1,1 +1,17 @@
+.description{
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: #f7f7f7;
+    border-radius: 8px;
+    font-size: 14px;
+}
 
+.desc-title{
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.desc-text{
+    color: #333;
+    line-height: 1.4;
+}
