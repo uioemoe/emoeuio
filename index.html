@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -129,6 +128,8 @@ video {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
+
+<script>
 window.addEventListener("DOMContentLoaded", () => {
 
   /* 🔥 FIREBASE CONFIG */
@@ -154,9 +155,10 @@ window.addEventListener("DOMContentLoaded", () => {
   const userEmail = document.getElementById("userEmail");
 
   /* LOGIN */
-  loginBtn.onclick = () =>
+  loginBtn.onclick = () => {
     auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
       .catch(err => alert(err.message));
+  };
 
   logoutBtn.onclick = () => auth.signOut();
 
@@ -164,7 +166,6 @@ window.addEventListener("DOMContentLoaded", () => {
     if (user) {
       loginBtn.style.display = "none";
       logoutBtn.style.display = "inline";
-
       userBox.style.display = "block";
       userPhoto.src = user.photoURL || "";
       userName.textContent = user.displayName || "User";
@@ -185,7 +186,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const videoRef = db.collection("videos").doc(videoId);
 
-    // LIVE COUNTS
     videoRef.onSnapshot(doc => {
       const d = doc.data() || { likes: 0, dislikes: 0 };
       likeCount.innerText = d.likes || 0;
@@ -210,7 +210,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (v.exists) {
         const old = v.data().type;
         if (old === type) {
-          update[type + "s"] = -1; // UNDO
+          update[type + "s"] = -1;
           t.delete(voteRef);
         } else {
           update[old + "s"] = -1;
@@ -223,15 +223,16 @@ window.addEventListener("DOMContentLoaded", () => {
       }
 
       t.set(videoRef, update, { merge: true });
-   
+    });
+  }
 
   /* ACTIVATE VIDEOS */
   setupVideo("video1");
   setupVideo("video2");
   setupVideo("video3");
-  
 
 });
 </script>
 
 </body>
+  
