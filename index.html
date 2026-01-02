@@ -95,43 +95,12 @@ video {
     <span class="yt-btn" id="dislike-video2">👎 <span id="dislikeCount-video2">0</span></span>
   </div>
 </div>
-
-<!-- VIDEO 3 -->
-<div class="card">
-
-  <!-- Streamable video -->
-  <div style="position:relative;width:100%;padding-bottom:56.25%;">
-    <iframe
-      src="https://streamable.com/e/pwcgb3"
-      frameborder="0"
-      allowfullscreen
-      style="position:absolute;top:0;left:0;width:100%;height:100%;">
-    </iframe>
-  </div>
-
-  <!-- ACTIONS -->
-  <div class="yt-actions">
-    <span class="yt-btn" id="like-video3">
-      👍 <span id="likeCount-video3">0</span>
-    </span>
-
-    <span class="yt-btn" id="dislike-video3">
-      👎 <span id="dislikeCount-video3">0</span>
-    </span>
-  </div>
-
-</div>
-
 <!-- 🔥 FIREBASE SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-<script>
-
 <script>
 window.addEventListener("DOMContentLoaded", () => {
-
   /* 🔥 FIREBASE CONFIG */
   const firebaseConfig = {
     apiKey: "AIzaSyDrnHPI4X4w0tpAKhjpoDMKD6M0P1JfVc8",
@@ -141,11 +110,10 @@ window.addEventListener("DOMContentLoaded", () => {
     messagingSenderId: "825724870390",
     appId: "1:825724870390:web:efc037f9b81bb825c196d7"
   };
-
+  /* 🔥 INIT FIREBASE */
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
-
   /* ELEMENTS */
   const loginBtn = document.getElementById("loginBtn");
   const logoutBtn = document.getElementById("logoutBtn");
@@ -153,15 +121,13 @@ window.addEventListener("DOMContentLoaded", () => {
   const userPhoto = document.getElementById("userPhoto");
   const userName = document.getElementById("userName");
   const userEmail = document.getElementById("userEmail");
-
-  /* LOGIN */
+  /* LOGIN / LOGOUT */
   loginBtn.onclick = () => {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithRedirect(provider);
-};
-
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .catch(err => alert(err.message));
+  };
   logoutBtn.onclick = () => auth.signOut();
-
+  /* USER INFO */
   auth.onAuthStateChanged(user => {
     if (user) {
       loginBtn.style.display = "none";
@@ -176,64 +142,6 @@ window.addEventListener("DOMContentLoaded", () => {
       userBox.style.display = "none";
     }
   });
-  
-  auth.getRedirectResult()
-  .catch(err => alert(err.message));
-
-  /* 🔥 LIKE / DISLIKE SYSTEM */
-  function setupVideo(videoId) {
-    const likeBtn = document.getElementById("like-" + videoId);
-    const dislikeBtn = document.getElementById("dislike-" + videoId);
-    const likeCount = document.getElementById("likeCount-" + videoId);
-    const dislikeCount = document.getElementById("dislikeCount-" + videoId);
-
-    const videoRef = db.collection("videos").doc(videoId);
-
-    videoRef.onSnapshot(doc => {
-      const d = doc.data() || { likes: 0, dislikes: 0 };
-      likeCount.innerText = d.likes || 0;
-      dislikeCount.innerText = d.dislikes || 0;
-    });
-
-    likeBtn.onclick = () => vote(videoId, "like");
-    dislikeBtn.onclick = () => vote(videoId, "dislike");
-  }
-
-  async function vote(videoId, type) {
-    const user = auth.currentUser;
-    if (!user) return alert("Please login to vote");
-
-    const voteRef = db.collection("votes").doc(user.uid + "_" + videoId);
-    const videoRef = db.collection("videos").doc(videoId);
-
-    await db.runTransaction(async t => {
-      const v = await t.get(voteRef);
-      let update = { likes: 0, dislikes: 0 };
-
-      if (v.exists) {
-        const old = v.data().type;
-        if (old === type) {
-          update[type + "s"] = -1;
-          t.delete(voteRef);
-        } else {
-          update[old + "s"] = -1;
-          update[type + "s"] = 1;
-          t.set(voteRef, { type });
-        }
-      } else {
-        update[type + "s"] = 1;
-        t.set(voteRef, { type });
-      }
-
-      t.set(videoRef, update, { merge: true });
-    });
-  }
-
-  /* ACTIVATE VIDEOS */
-  setupVideo("video1");
-  setupVideo("video2");
-  setupVideo("video3");
-
 });
 </script>
 });
