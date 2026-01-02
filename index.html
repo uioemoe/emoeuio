@@ -3,150 +3,133 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Demo Video Feed</title>
+<title>InstaConnect – Supabase</title>
 
-<!-- Supabase CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 body {
-    margin: 0;
-    background: #f2f2f2;
-    font-family: Arial, sans-serif;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fafafa;
 }
-.card {
-    max-width: 480px;
-    margin: 12px auto;
-    background: #fff;
-    border-radius: 12px;
-    padding: 10px;
-}
-video {
-    width: 100%;
-    border-radius: 10px;
-}
-.actions {
-    display: flex;
-    margin-top: 8px;
-    gap: 10px;
+header {
+  background: white;
+  padding: 12px 20px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 button {
-    flex: 1;
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    color: white;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }
-.like { background: #4caf50; }
-.dislike { background: #f44336; }
-.count { font-size: 13px; }
-.login-box {
-    text-align: center;
-    margin: 15px;
+.login-btn { background: #4285f4; color: white; }
+.logout-btn { background: #e1306c; color: white; }
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  text-align: center;
+}
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div class="login-box">
-    <input id="email" placeholder="Email">
-    <input id="password" placeholder="Password" type="password">
-    <button onclick="login()" style="background:black;">Login / Signup</button>
-    <p id="userStatus"></p>
-</div>
+<header>
+  <h2>InstaConnect</h2>
+  <div id="authButtons"></div>
+</header>
 
-<!-- VIDEO 1 -->
-<div class="card">
-<video controls>
-<source src="https://www.w3schools.com/html/mov_bbb.mp4">
-</video>
-<div class="actions">
-<button class="like" onclick="like(1)">👍 Like <span id="l1">0</span></button>
-<button class="dislike" onclick="dislike(1)">👎 Dislike <span id="d1">0</span></button>
-</div>
-</div>
-
-<!-- VIDEO 2 -->
-<div class="card">
-<video controls>
-<source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4">
-</video>
-<div class="actions">
-<button class="like" onclick="like(2)">👍 Like <span id="l2">0</span></button>
-<button class="dislike" onclick="dislike(2)">👎 Dislike <span id="d2">0</span></button>
-</div>
+<div class="container" id="content">
+  <p>Loading...</p>
 </div>
 
 <script>
-/* 🔑 SUPABASE SETUP */
+/* 🔑 SUPABASE */
 const supabase = window.supabase.createClient(
-  "YOUR_SUPABASE_URL",
-  "YOUR_ANON_KEY"
+  "https://YOUR_PROJECT_ID.supabase.co",
+  "YOUR_PUBLIC_ANON_KEY"
 );
 
-/* 🔐 LOGIN */
+/* UI */
+const authButtons = document.getElementById("authButtons");
+const content = document.getElementById("content");
+
+/* LOGIN */
 async function login() {
-  const email = email.value;
-  const password = password.value;
-
-  const { data, error } = await supabase.auth.signUp({
-    email, password
+  await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: "https://uioemoe.github.io/emoeuio/"
+    }
   });
+}
 
-  if (!error) {
-    document.getElementById("userStatus").innerText = "Logged in ✅";
+/* LOGOUT */
+async function logout() {
+  await supabase.auth.signOut();
+  location.reload();
+}
+
+/* AUTH STATE */
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (session?.user) {
+    showUser(session.user);
+  } else {
+    showLogin();
   }
+});
+
+/* SHOW LOGIN */
+function showLogin() {
+  authButtons.innerHTML = `
+    <button class="login-btn" onclick="login()">Sign in with Google</button>
+  `;
+  content.innerHTML = `
+    <h3>Welcome 👋</h3>
+    <p>Please sign in to continue</p>
+  `;
 }
 
-/* 📄 LOAD COUNTS */
-async function loadCounts() {
-  const { data } = await supabase.from("videos").select("*");
-  data.forEach(v => {
-    document.getElementById("l"+v.id).innerText = v.likes;
-    document.getElementById("d"+v.id).innerText = v.dislikes;
+/* SHOW USER */
+async function showUser(user) {
+  authButtons.innerHTML = `
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  `;
+
+  /* Save user if new */
+  await supabase.from("users").upsert({
+    id: user.id,
+    email: user.email,
+    avatar_url: user.user_metadata.avatar_url
   });
-}
-loadCounts();
 
-/* 👍 LIKE */
-async function like(id) {
-  const user = (await supabase.auth.getUser()).data.user;
-  if (!user) return alert("Login required");
-
-  const { data } = await supabase
-    .from("videos")
-    .select("likes")
-    .eq("id", id)
-    .single();
-
-  await supabase
-    .from("videos")
-    .update({ likes: data.likes + 1 })
-    .eq("id", id);
-
-  loadCounts();
+  content.innerHTML = `
+    <img src="${user.user_metadata.avatar_url}" class="avatar">
+    <h3>${user.email}</h3>
+    <p>You are logged in ✅</p>
+    <p>Now ready for posts, stories & messages</p>
+  `;
 }
 
-/* 👎 DISLIKE */
-async function dislike(id) {
-  const user = (await supabase.auth.getUser()).data.user;
-  if (!user) return alert("Login required");
-
-  const { data } = await supabase
-    .from("videos")
-    .select("dislikes")
-    .eq("id", id)
-    .single();
-
-  await supabase
-    .from("videos")
-    .update({ dislikes: data.dislikes + 1 })
-    .eq("id", id);
-
-  loadCounts();
-}
+/* INITIAL CHECK */
+(async () => {
+  const { data } = await supabase.auth.getSession();
+  if (data.session?.user) {
+    showUser(data.session.user);
+  } else {
+    showLogin();
+  }
+})();
 </script>
 
 </body>
