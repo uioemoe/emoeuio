@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InstaClone - Feed</title>
+    <link rel="stylesheet" href="css/feed.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">InstaClone</a>
+            <div class="nav-search">
+                <input type="text" placeholder="Search" class="search-input">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="nav-icons">
+                <a href="index.html" class="nav-icon active"><i class="fas fa-home"></i></a>
+                <a href="explore.html" class="nav-icon"><i class="fas fa-compass"></i></a>
+                <a href="#" class="nav-icon" id="create-post-btn"><i class="fas fa-plus-square"></i></a>
+                <a href="profile.html" class="nav-icon"><i class="fas fa-user"></i></a>
+                <button id="logout-btn" class="nav-icon"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="feed-container">
+            <!-- Stories Section -->
+            <section class="stories-section">
+                <div class="stories-container">
+                    <div class="story add-story">
+                        <div class="story-avatar">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <span>Add Story</span>
+                    </div>
+                    <!-- Stories will be populated by JS -->
+                </div>
+            </section>
+
+            <!-- Posts Feed -->
+            <section class="posts-feed" id="posts-feed">
+                <!-- Posts will be loaded here -->
+            </section>
+
+            <!-- Load More Button -->
+            <div class="load-more-container">
+                <button id="load-more" class="load-more-btn">Load More</button>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="current-user">
+                <div class="user-avatar" id="current-user-avatar"></div>
+                <div>
+                    <strong id="current-username"></strong>
+                    <span id="current-display-name"></span>
+                </div>
+            </div>
+            <div class="suggestions">
+                <h3>Suggestions For You</h3>
+                <div id="suggestions-list">
+                    <!-- Suggestions will be populated by JS -->
+                </div>
+            </div>
+            <footer class="sidebar-footer">
+                <p>© 2024 InstaClone</p>
+                <p>Made with <i class="fas fa-heart"></i></p>
+            </footer>
+        </aside>
+    </main>
+
+    <!-- Create Post Modal -->
+    <div class="modal" id="create-post-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Post</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-area" id="upload-area">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drag & drop or click to upload</p>
+                    <input type="file" id="media-upload" accept="image/*,video/*" hidden>
+                    <button class="btn btn-secondary" id="choose-file-btn">Choose File</button>
+                </div>
+                <div class="preview-area" id="preview-area" style="display: none;">
+                    <img id="media-preview" src="" alt="Preview">
+                    <video id="video-preview" controls style="display: none;"></video>
+                </div>
+                <div class="post-form" id="post-form" style="display: none;">
+                    <textarea id="caption" placeholder="Write a caption..." rows="4"></textarea>
+                    <button class="btn btn-primary" id="publish-post">Publish Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comment Modal -->
+    <div class="modal" id="comment-modal">
+        <div class="modal-content comment-modal">
+            <div class="modal-header">
+                <h2>Comments</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="comments-list" id="comments-list">
+                    <!-- Comments will be loaded here -->
+                </div>
+                <div class="add-comment">
+                    <input type="text" id="comment-input" placeholder="Add a comment...">
+                    <button id="post-comment" class="btn btn-primary">Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/supabase.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/feed.js"></script>
+    <script type="module" src="js/post.js"></script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #fafafa;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #262626;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 350px;
+    padding: 20px;
+}
+
+.auth-card {
+    background: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    padding: 40px 32px;
+    text-align: center;
+}
+
+.auth-header h1 {
+    font-size: 32px;
+    margin-bottom: 16px;
+    color: #262626;
+}
+
+.auth-header p {
+    color: #8e8e8e;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.auth-form {
+    margin-bottom: 24px;
+}
+
+.form-group {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    background: #fafafa;
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #a8a8a8;
+}
+
+.show-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #8e8e8e;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-primary {
+    background: #0095f6;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #0077cc;
+}
+
+.divider {
+    position: relative;
+    margin: 24px 0;
+    color: #8e8e8e;
+    font-size: 13px;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #dbdbdb;
+}
+
+.divider::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #dbdbdb;
+}
+
+.auth-footer {
+    font-size: 14px;
+    color: #8e8e8e;
+}
+
+.auth-footer a {
+    color: #0095f6;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    color: #ed4956;
+    margin-top: 16px;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 16px;
+    }
+    
+    .auth-card {
+        padding: 32px 24px;
+        border: none;
+        background: transparent;
+    }
+}
